@@ -24,3 +24,7 @@ def manual_crop(event,x,y,flags,param):
         if len(refPoint) == 2:
             roi = im[refPoint[0][1]:refPoint[1][1],refPoint[0][0]:refPoint[1][0]]
             cv2.imshow("Cropped",roi)
+            cv2.imwrite("./data/test.jpg",roi)
+
+
+    
