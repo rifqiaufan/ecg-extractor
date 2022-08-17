@@ -3,6 +3,7 @@ import numpy as np
 from cv2 import CAP_PROP_PVAPI_BINNINGX
 from manual_crop import manual_crop
 from batch_crop import batch_crop
+from digitize_ecg import digitize_ecg
 
 print("""
 ECG EXTRACTOR \n
@@ -44,6 +45,7 @@ while True:
 
     elif str.lower(mode) == "batch":
         batch_crop([50,800],[100,190],'./data','./output')
+        digitize_ecg('./output/ecg_test.jpg','./output_digitize')
         break
 
     elif str.lower(mode) == "q":

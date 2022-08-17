@@ -1,28 +1,47 @@
 from unicodedata import digit
 import numpy as np
 import cv2
+from skimage.morphology import skeletonize
+import pandas as pd
+import os
 
 
 def digitize_ecg(input_path,output_path='./'):
     im = cv2.imread(input_path)
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    im_gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
+    bw = cv2.threshold(im_gray, 127, 255, cv2.THRESH_BINARY)
+    bw = bw[1].astype(bool)
+    skeleton = skeletonize(bw)
 
-    
+    value1 = []
+    value2 = []
+    for pos in range(len(skeleton[0,:])):
+        if np.sum(skeleton[:,pos] == True)>1:
+            value1.append(np.min(np.where(skeleton[:,pos] == True)[0]))
+            value2.append(np.max(np.where(skeleton[:,pos] == True)[0]))
+        elif np.sum(skeleton[:,pos] == True) == 0:
+            continue
+        else:
+            value1.append(np.where(skeleton[:,pos] == True)[0][0])
+            value2.append(np.where(skeleton[:,pos] == True)[0][0])
 
-    row,col = np.shape(im)
-    threshold_im = np.array([255 if px>200 else 0 for px in im.reshape(1,-1)[0]])
-    threshold_im = threshold_im.reshape(row,col)
-    threshold_im = threshold_im.astype(np.uint8)
+    value1 = np.array(value1)*-1
+    value2 = np.array(value2)*-1
+    ecg_digitize = pd.DataFrame({
+        'time':np.arange(0,len(value1)),
+        'val':value1
+    })
+    ecg_digitize2 = pd.DataFrame({
+        'time':np.arange(0,len(value2)),
+        'val':value2
+    })
 
-    print(threshold_im)
-   
-    print("input size: "+str(np.shape(im)))
-    print("output size: "+str(np.shape(threshold_im)))
+    boundary_up = np.mean(ecg_digitize2['val']) + 2*np.std(ecg_digitize2['val'])
+    boundary_down = np.mean(ecg_digitize2['val']) - 2*np.std(ecg_digitize2['val'])
+    update_ecg_digitize2 = ecg_digitize2.loc[ecg_digitize2['val'] > boundary_down,:]
 
-    # cv2.imshow("Threshold",threshold_im)
-    # cv2.waitKey(0)
-
+    update_ecg_digitize2.to_csv(os.path.join(output_path,'test.csv'),index=False)
 
     return
 
-digitize_ecg('./output/ecg_test.jpg')
+# digitize_ecg('./output/ecg_test.jpg','./output_digitize')
