@@ -15,13 +15,13 @@ parser.add_argument('path', help='path to image/folder')
 parser.add_argument('--batch', default=False, action='store_true', help='running in batch')
 args = parser.parse_args()
 
-print("""
+"""
 ECG EXTRACTOR \n
 Manual/batch processing supported \n
 - batch processing only work for consistent image size and layout
 - more features to come ...
 
-""")
+"""
 
 
 if args.batch != True:
@@ -56,18 +56,26 @@ if args.batch != True:
 
 elif args.batch == True:
     if ~os.path.isfile(args.path):
-        try:
-            batch_crop([50,800],[100,190],args.path,'./output')
-            working_output = os.listdir('./output')
-            working_output = [file for file in working_output if not file.startswith('.')]
-            for i in range(len(working_output)):
-                digitize_ecg(os.path.join('./output',working_output[i]),'./output_digitize')
-        except:
-            print("Something goes wrong")
+        # try:
+        x = input('starting and ending x coordinate (ex: 50,800): ')
+        y = input('starting and ending y coordinate (ex: 100,190): ')
+        # batch_crop([50,800],[100,190],args.path,'./output')
+        x = x.split(',')
+        x = [int(coor.strip()) for coor in x]
+        y = y.split(',')
+        y = [int(coor.strip()) for coor in y]
+
+        batch_crop(x,y,args.path,'./output')
+        working_output = os.listdir('./output')
+        working_output = [file for file in working_output if not file.startswith('.')]
+        for i in range(len(working_output)):
+            digitize_ecg(os.path.join('./output',working_output[i]),'./output_digitize')
+        # except:
+        #     print("Something goes wrong")
     else:
         print("Please select the correct working folder")
 
-print("Extraction completed!")
+print("Extraction complete!")
 
     
 
