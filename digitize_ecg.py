@@ -28,20 +28,23 @@ def digitize_ecg(input_path,output_path='./'):
     value1 = np.array(value1)*-1
     value2 = np.array(value2)*-1
     ecg_digitize = pd.DataFrame({
-        'time':np.arange(0,len(value1)),
-        'val':value1
+        'x':np.arange(0,len(value1)),
+        'y':value1
     })
     ecg_digitize2 = pd.DataFrame({
-        'time':np.arange(0,len(value2)),
-        'val':value2
+        'x':np.arange(0,len(value2)),
+        'y':value2
     })
 
-    boundary_up = np.mean(ecg_digitize2['val']) + 2*np.std(ecg_digitize2['val'])
-    boundary_down = np.mean(ecg_digitize2['val']) - 2*np.std(ecg_digitize2['val'])
-    update_ecg_digitize2 = ecg_digitize2.loc[ecg_digitize2['val'] > boundary_down,:]
+    boundary_up = np.mean(ecg_digitize2['y']) + 2*np.std(ecg_digitize2['y'])
+    boundary_down = np.mean(ecg_digitize2['y']) - 2*np.std(ecg_digitize2['y'])
+    update_ecg_digitize2 = ecg_digitize2.loc[ecg_digitize2['y'] > boundary_down,:]
 
-    update_ecg_digitize2.to_csv(os.path.join(output_path,'test.csv'),index=False)
+    file_name = input_path.split('/')[-1]
+    file_name = file_name.split('.')[0] + '.csv'
+ 
+    update_ecg_digitize2.to_csv(os.path.join(output_path,file_name),index=False)
 
     return
 
-# digitize_ecg('./output/ecg_test.jpg','./output_digitize')
+digitize_ecg('./output/ecg_test.jpg','./output_digitize')
