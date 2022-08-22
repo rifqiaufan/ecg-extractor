@@ -1,4 +1,3 @@
-import argparse
 from genericpath import isfile
 import cv2
 import os
@@ -8,6 +7,7 @@ from batch_crop import batch_crop
 from manual_crop import manual_crop
 # from batch_crop import batch_crop
 from digitize_ecg import digitize_ecg
+import sys
 import argparse
 
 parser = argparse.ArgumentParser(description='Extract ECG data from image/screenshot')
@@ -19,6 +19,7 @@ args = parser.parse_args()
 ECG EXTRACTOR \n
 Manual/batch processing supported \n
 - batch processing only work for consistent image size and layout
+- starting coordinate for the image (0,0) is on the top left
 - more features to come ...
 
 """
@@ -52,7 +53,9 @@ if args.batch != True:
 
         digitize_ecg('./output/ecg_test.jpg','./output_digitize')
     else:
+        print('Something wrong with the input')
         print('Please select the correct file path')
+        sys.exit(1)
 
 elif args.batch == True:
     if ~os.path.isfile(args.path):
@@ -60,10 +63,15 @@ elif args.batch == True:
         x = input('starting and ending x coordinate (ex: 50,800): ')
         y = input('starting and ending y coordinate (ex: 100,190): ')
         # batch_crop([50,800],[100,190],args.path,'./output')
-        x = x.split(',')
-        x = [int(coor.strip()) for coor in x]
-        y = y.split(',')
-        y = [int(coor.strip()) for coor in y]
+        try:
+            x = x.split(',')
+            x = [int(coor.strip()) for coor in x]
+            y = y.split(',')
+            y = [int(coor.strip()) for coor in y]
+        except (TypeError,ValueError):
+            print("Something wrong with the coordinate inputs(writing format,data type)")
+            sys.exit(1)
+            
 
         batch_crop(x,y,args.path,'./output')
         working_output = os.listdir('./output')
@@ -77,54 +85,4 @@ elif args.batch == True:
 
 print("Extraction complete!")
 
-    
-
-
-
-# while True:
-#     mode = input("manual/batch? ") or "manual"
-
-#     if str.lower(mode) == "manual":
-#         path = args.path
-#         im = cv2.imread(path)
-#         im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-#         # coordinate start from top left (0,0)
-#         cropping = False
-#         x_start, y_start, x_end, y_end = 0, 0, 0, 0
-
-#         param = [im, cropping]
-
-#         # load and extract ecg data
-#         cv2.namedWindow("image")
-#         cv2.setMouseCallback("image", manual_crop,param)
-
-#         # drawing rectangle
-#         i = im.copy()
-#         if not cropping:
-#             cv2.imshow("image", i)
-
-#         elif cropping:
-#             cv2.rectangle(i, (x_start, y_start), (x_end, y_end),(0,255,0),5)
-#             cv2.imshow("image",i)
-
-#         cv2.waitKey(0)
-#         print(i.shape)
-#         break
-
-#     elif str.lower(mode) == "batch":
-#         batch_crop([50,800],[100,190],'./data','./output')
-#         digitize_ecg('./output/ecg_test.jpg','./output_digitize')
-#         break
-
-#     elif str.lower(mode) == "q":
-#         print("Quit")
-#         break
-#     else:
-#         print("Mode not recognized!\n")
-
-
-
-
-
-
-
+ 
