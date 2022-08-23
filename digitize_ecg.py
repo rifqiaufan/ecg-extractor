@@ -47,4 +47,4 @@ def digitize_ecg(input_path,output_path='./'):
 
     return
 
-digitize_ecg('./output/ecg_test.jpg','./output_digitize')
+# digitize_ecg('./output/ecg_test.jpg','./output_digitize')

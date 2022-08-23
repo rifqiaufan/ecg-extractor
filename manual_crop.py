@@ -1,11 +1,13 @@
 import cv2
 import numpy as np
+import os
 
 def manual_crop(event,x,y,flags,param):
     global x_start, y_start, x_end, y_end, cropping
 
     im = param[0]
     cropping = param[1]
+    filename = param[2]
 
     if event == cv2.EVENT_LBUTTONDOWN:
         x_start, y_start, x_end, y_end = x,y,x,y
@@ -24,7 +26,7 @@ def manual_crop(event,x,y,flags,param):
         if len(refPoint) == 2:
             roi = im[refPoint[0][1]:refPoint[1][1],refPoint[0][0]:refPoint[1][0]]
             cv2.imshow("Cropped",roi)
-            cv2.imwrite("./output/ecg_test.jpg",roi)
+            cv2.imwrite(os.path.join("./output",filename),roi)
 
 
     

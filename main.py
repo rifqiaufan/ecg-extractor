@@ -1,4 +1,5 @@
 from genericpath import isfile
+from threading import BrokenBarrierError
 import cv2
 import os
 import numpy as np
@@ -30,28 +31,30 @@ if args.batch != True:
     if os.path.isfile(im_path):
         im = cv2.imread(im_path)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        filename = im_path.split('/')[-1]
         # coordinate start from top left (0,0)
         cropping = False
         x_start, y_start, x_end, y_end = 0, 0, 0, 0
 
-        param = [im, cropping]
+        param = [im, cropping,filename]
 
         # load and extract ecg data
         cv2.namedWindow("image")
         cv2.setMouseCallback("image", manual_crop,param)
 
-        # drawing rectangle
-        i = im.copy()
-        if not cropping:
-            cv2.imshow("image", i)
-        elif cropping:
-            cv2.rectangle(i, (x_start, y_start), (x_end, y_end),(0,255,0),5)
-            cv2.imshow("image",i)
+        while True:
+            # drawing rectangle
+            i = im.copy()
+            if not cropping:
+                cv2.imshow("image", i)
+            elif cropping:
+                cv2.rectangle(i, (x_start, y_start), (x_end, y_end),(0,255,0),5)
+                cv2.imshow("image",i)
 
-        cv2.waitKey(0)
-        print(i.shape)
+            if cv2.waitKey(0):
+                break
 
-        digitize_ecg('./output/ecg_test.jpg','./output_digitize')
+        digitize_ecg(os.path.join('./output',filename),'./output_digitize')
     else:
         print('Something wrong with the input')
         print('Please select the correct file path')
