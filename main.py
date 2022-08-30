@@ -30,7 +30,7 @@ if args.batch != True:
     im_path = args.path
     if os.path.isfile(im_path):
         im = cv2.imread(im_path)
-        im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        # im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         filename = im_path.split('/')[-1]
         # coordinate start from top left (0,0)
         cropping = False

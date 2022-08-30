@@ -8,6 +8,7 @@ import os
 
 def digitize_ecg(input_path,output_path='./'):
     im = cv2.imread(input_path)
+    
     im_gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
     bw = cv2.threshold(im_gray, 127, 255, cv2.THRESH_BINARY)
     bw = bw[1].astype(bool)

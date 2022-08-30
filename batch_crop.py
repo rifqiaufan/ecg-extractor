@@ -14,9 +14,15 @@ def batch_crop(x,y,input_path,output_path):
         im = cv2.imread(os.path.join(path,file))
         
         roi = im[refPoint[0][1]:refPoint[1][1],refPoint[0][0]:refPoint[1][0]]
+        # convert to hsv than apply mask to thershold ecg
+        hsv = cv2.cvtColor(roi , cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, (36, 25, 25), (70, 255,255))
+        imask = mask>0
+        green = np.zeros_like(roi, np.uint8)
+        green[imask] = roi[imask]
 
         output_name = str.split(file,'.')
-        cv2.imwrite(os.path.join(output_path,output_name[0]+".jpg") ,roi)
+        cv2.imwrite(os.path.join(output_path,output_name[0]+".jpg") ,green)
         
 
 
