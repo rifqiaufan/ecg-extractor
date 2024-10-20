@@ -163,6 +163,3 @@ cython_debug/
 
 
 # data folders
-data/
-output/
-output/digitize/
